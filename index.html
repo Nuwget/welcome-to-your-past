@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Welcome to your past</title>
+<meta name="theme-color" content="#04061a">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;500;600;700&family=VT323&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<canvas id="scene" aria-label="uma janela à noite com chuva, Dudu e Bubu no parapeito"></canvas>
+
+<header class="top">
+  <span class="brand">welcome to your past</span>
+  <span class="top-r">
+    <span class="hint" id="hint">clique no céu</span>
+    <button id="btnFs" class="bare" type="button" aria-label="tela cheia">
+      <svg viewBox="0 0 11 11" shape-rendering="crispEdges"><path d="M0 0h4v1H0zM0 1h1v3H0zM7 0h4v1H7zM10 1h1v3h-1zM0 7h1v3H0zM0 10h4v1H0zM10 7h1v3h-1zM7 10h4v1H7z"/></svg>
+    </button>
+  </span>
+</header>
+
+<main class="stage">
+  <div class="lyric" id="lyric" aria-live="polite"></div>
+</main>
+
+<section class="dock" id="dock" aria-label="player">
+  <div class="dock-row">
+    <div class="meta">
+      <canvas class="cover" id="coverCanvas" width="32" height="32" aria-hidden="true"></canvas>
+      <div class="meta-t">
+        <p class="t">Welcome to your past</p>
+        <p class="s" id="sub">pausado</p>
+      </div>
+    </div>
+    <div class="transport">
+      <button id="btnLoop" class="bare sm" type="button" aria-label="repetir" aria-pressed="false">
+        <svg viewBox="0 0 11 9" shape-rendering="crispEdges"><path d="M2 1h6v1H2zM7 0h1v3H7zM8 1h1v1H8zM9 2h1v4H9zM1 2h1v5H1zM4 7h5v1H4zM3 6h1v3H3zM2 7h1v1H2z"/></svg>
+      </button>
+      <button id="btnBack" class="bare" type="button" aria-label="voltar 10 segundos">
+        <svg viewBox="0 0 10 9" shape-rendering="crispEdges"><path d="M0 4h1v1H0zM1 3h1v3H1zM2 2h1v5H2zM3 1h1v7H3zM4 0h1v9H4zM5 4h1v1H5zM6 3h1v3H6zM7 2h1v5H7zM8 1h1v7H8zM9 0h1v9H9z"/></svg>
+      </button>
+      <button id="btnPlay" class="play" type="button" aria-label="tocar">
+        <svg class="i-play" viewBox="0 0 7 9" shape-rendering="crispEdges"><path d="M1 0h1v9H1zM2 1h1v7H2zM3 2h1v5H3zM4 3h1v3H4zM5 4h1v1H5z"/></svg>
+        <svg class="i-pause" viewBox="0 0 8 9" shape-rendering="crispEdges"><path d="M1 0h2v9H1zM5 0h2v9H5z"/></svg>
+      </button>
+      <button id="btnFwd" class="bare" type="button" aria-label="avançar 10 segundos">
+        <svg viewBox="0 0 10 9" shape-rendering="crispEdges"><path d="M0 0h1v9H0zM1 1h1v7H1zM2 2h1v5H2zM3 3h1v3H3zM4 4h1v1H4zM5 0h1v9H5zM6 1h1v7H6zM7 2h1v5H7zM8 3h1v3H8zM9 4h1v1H9z"/></svg>
+      </button>
+      <label class="vol" title="volume">
+        <svg viewBox="0 0 11 9" shape-rendering="crispEdges"><path d="M0 3h2v3H0zM2 2h1v5H2zM3 1h1v7H3zM4 0h1v9H4zM6 3h1v3H6zM8 2h1v1H8zM9 3h1v3H9zM8 6h1v1H8z"/></svg>
+        <input id="vol" type="range" min="0" max="100" value="85" aria-label="volume">
+      </label>
+    </div>
+  </div>
+  <div class="wave-row">
+    <span id="tCur" class="time">0:00</span>
+    <div class="wave-wrap">
+      <canvas id="wave" aria-hidden="true"></canvas>
+      <input id="seek" type="range" min="0" max="1000" value="0" step="1" aria-label="posição da música">
+    </div>
+    <span id="tDur" class="time">0:00</span>
+  </div>
+</section>
+
+<div class="toast" id="toast" role="status"></div>
+
+<div class="gate" id="gate">
+  <div class="gate-in">
+    <p class="eyebrow">use fones de ouvido</p>
+    <h1>Welcome<br>to your past</h1>
+    <button id="gateBtn" type="button" aria-label="entrar">
+      <svg viewBox="0 0 7 9" shape-rendering="crispEdges"><path d="M1 0h1v9H1zM2 1h1v7H2zM3 2h1v5H3zM4 3h1v3H4zM5 4h1v1H5z"/></svg>
+    </button>
+    <p class="enter">entrar</p>
+  </div>
+</div>
+
+<audio id="audio" preload="auto" playsinline>
+  <source src="media/track.m4a" type='audio/mp4; codecs="opus"'>
+  <source src="media/track.mp3" type="audio/mpeg">
+</audio>
+
+<script src="data/lyrics.js"></script>
+<script src="js/scene.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
