@@ -213,7 +213,31 @@
     else if (e.key === 'f' || e.key === 'F') $('btnFs').click();
   });
 
-  $('gateBtn').addEventListener('click', () => { body.classList.add('on'); setupAnalyser(); play(); });
+  /* ---------- gate -> scene: the dark veil dissolves block by block, from the ledge upwards ---------- */
+  function revealScene() {
+    if (reduce) return;
+    const c = document.createElement('canvas'), g = c.getContext('2d');
+    c.style.cssText = 'position:fixed;inset:0;width:100%;height:100%;z-index:21;pointer-events:none;image-rendering:pixelated';
+    const cs = Math.max(14, Math.round(Math.max(innerWidth, innerHeight) / 44));
+    const cols = Math.ceil(innerWidth / cs), rows = Math.ceil(innerHeight / cs);
+    c.width = cols; c.height = rows;
+    const delay = [];
+    for (let y = 0; y < rows; y++) for (let x = 0; x < cols; x++) delay.push(((rows - 1 - y) / rows) * 0.55 + Math.abs(x / cols - 0.5) * 0.25 + Math.random() * 0.3);
+    document.body.appendChild(c);
+    const t0 = performance.now(), D = 0.28;
+    (function step(now) {
+      const t = (now - t0) / 1000; let alive = false;
+      g.clearRect(0, 0, cols, rows);
+      for (let i = 0; i < delay.length; i++) {
+        const k = Math.min(1, Math.max(0, (t - delay[i]) / D)), a = Math.ceil((1 - k) * 3) / 3; // 3 visible steps per block
+        if (a <= 0) continue; alive = true;
+        g.fillStyle = `rgba(3,4,16,${(0.82 * a).toFixed(3)})`; g.fillRect(i % cols, (i / cols) | 0, 1, 1);
+      }
+      if (alive) requestAnimationFrame(step); else c.remove();
+    })(t0);
+  }
+  $('gateBtn').addEventListener('click', () => { revealScene(); body.classList.add('on'); setupAnalyser(); play(); });
+  if (/[#&]go\b/.test(location.hash)) setTimeout(() => $('gateBtn').click(), 200);
 
   if ('mediaSession' in navigator) {
     navigator.mediaSession.metadata = new MediaMetadata({ title: TITLE, artist: ARTIST || ' ' });

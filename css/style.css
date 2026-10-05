@@ -121,9 +121,10 @@ body.playing .play .i-pause { display: block; }
 .gate {
   position: fixed; inset: 0; z-index: 20; display: grid; place-items: center; text-align: center;
   background: linear-gradient(rgba(3, 4, 16, .82), rgba(3, 4, 16, .82));
-  transition: opacity 1.4s steps(8), visibility 0s 1.4s;
+  transition: opacity .3s steps(3), visibility 0s .3s;
 }
 body.on .gate { opacity: 0; visibility: hidden; pointer-events: none; }
+body.on .gate-in { transform: translateY(-14px); transition: transform .3s steps(3); }
 .gate-in { display: flex; flex-direction: column; align-items: center; padding: 24px; }
 .eyebrow { font-size: 22px; letter-spacing: .3em; text-transform: uppercase; color: var(--mute); margin-bottom: 18px; text-shadow: 2px 2px 0 #0a0620; }
 .gate h1 {
