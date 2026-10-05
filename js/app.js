@@ -1,4 +1,4 @@
-/* Player, audio analysis, waveform, synced lyrics. */
+/* Player, audio analysis, waveform, animated title. */
 (() => {
   const TITLE = 'Welcome to your past';
   const ARTIST = ''; // preencha para aparecer no player
@@ -6,15 +6,34 @@
   const $ = (id) => document.getElementById(id);
   const audio = $('audio');
   const body = document.body;
-  const lyricEl = $('lyric');
   const L = (window.Levels = window.Levels || { bass: 0, mid: 0, treble: 0 });
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const fmt = (s) => { s = Math.max(0, Math.floor(isFinite(s) ? s : 0)); return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`; };
 
   audio.volume = 0.85;
 
+  // let the stylesheet know how tall the player is
+  const dockEl = $('dock');
+  // the phone layout sizes the ledge from the player's height, so the scene is rebuilt when that changes
+  let lastDockH = 0;
+  if (window.ResizeObserver) new ResizeObserver(() => {
+    const h = dockEl.offsetHeight; document.documentElement.style.setProperty('--dock-h', h + 'px');
+    if (Math.abs(h - lastDockH) > 2) { lastDockH = h; dispatchEvent(new Event('resize')); }
+  }).observe(dockEl);
+
   const titleEl = $('title');
-  [...TITLE].forEach((ch, i) => { const c = document.createElement('span'); c.className = 'c'; c.setAttribute('aria-hidden', 'true'); c.style.setProperty('--i', i); c.textContent = ch; titleEl.appendChild(c); });
+  // "Welcome to" / "your past" are two deliberate lines on phones, one line on desktop
+  let ci = 0;
+  [['Welcome', 'to'], ['your', 'past']].forEach((words, li) => {
+    const line = document.createElement('span'); line.className = 'tl'; line.setAttribute('aria-hidden', 'true');
+    words.forEach((word, wi) => {
+      const w = document.createElement('span'); w.className = 'tw';
+      [...word].forEach((ch) => { const c = document.createElement('span'); c.className = 'c'; c.style.setProperty('--i', ci++); c.textContent = ch; w.appendChild(c); });
+      line.appendChild(w); if (wi < words.length - 1) { line.appendChild(document.createTextNode(' ')); ci++; }
+    });
+    titleEl.appendChild(line); if (li === 0) { titleEl.appendChild(document.createTextNode(' ')); ci++; }
+  });
+
 
   function toast(msg, ms = 4200) {
     const t = $('toast'); t.textContent = msg; t.classList.add('show');
@@ -137,27 +156,17 @@
     wctx.fillStyle = '#ffd98a'; wctx.fillRect(hx - 1, Math.floor(mid) - 1, 4, 2);
   }
 
-  /* ---------- lyrics ---------- */
-  const lines = (window.LYRICS || []).filter((l) => l.text && l.text.trim()).sort((a, b) => a.t - b.t);
-  let cur = null, curIdx = -2;
-  function showLine(idx) {
-    if (idx === curIdx) return;
-    curIdx = idx;
-    if (cur) { const old = cur; old.classList.remove('in'); old.classList.add('out'); setTimeout(() => old.remove(), 1700); cur = null; }
-    if (idx < 0) return;
-    const el = document.createElement('p');
-    el.className = 'line';
-    lines[idx].text.split(/(\s+)/).filter(Boolean).forEach((w, i) => {
-      const s = document.createElement('span'); s.className = 'w'; s.style.setProperty('--i', Math.floor(i / 2)); s.textContent = w; el.appendChild(s);
-    });
-    lyricEl.appendChild(el); cur = el;
-    void el.offsetWidth; requestAnimationFrame(() => el.classList.add('in'));
-  }
-  function syncLyrics(time) {
-    let idx = -1;
-    for (let k = 0; k < lines.length; k++) { if (lines[k].t <= time + 0.1) idx = k; else break; }
-    if (idx >= 0 && time > lines[idx].end + 1.5) idx = -1;
-    showLine(idx);
+  /* ---------- tiny equaliser next to the state label ---------- */
+  const eq = $('eq'), ectx = eq.getContext('2d');
+  function drawEq(t) {
+    ectx.clearRect(0, 0, 14, 7);
+    const on = !audio.paused && !audio.ended;
+    for (let i = 0; i < 4; i++) {
+      const band = i < 2 ? L.bass : i === 2 ? L.mid : L.treble;
+      const h = on ? Math.max(1, Math.min(7, Math.round(1 + band * 5 + (Math.sin(t * (5 + i * 1.7) + i * 2) + 1) * 0.9))) : 1;
+      ectx.fillStyle = '#8f6cf0'; ectx.fillRect(i * 3 + 1, 7 - h, 2, h);
+      ectx.fillStyle = '#e8dcff'; ectx.fillRect(i * 3 + 1, 7 - h, 2, 1);
+    }
   }
 
   /* ---------- controls ---------- */
@@ -225,7 +234,7 @@
     const s = Math.floor(ct);
     if (s !== lastT) { lastT = s; $('tCur').textContent = fmt(ct); }
     drawWave(p);
-    syncLyrics(ct);
+    drawEq(t);
     requestAnimationFrame(tick);
   }
   requestAnimationFrame(tick);
