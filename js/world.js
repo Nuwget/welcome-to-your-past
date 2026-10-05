@@ -17,7 +17,7 @@
   const NEON = ['#ff5aa0', '#5ad0ff', '#a07aff', '#ffb86b'];
 
   /* ---------------------------------------------------------------- scene state */
-  let cityK = 1, W, H, PXC, sillH, sillTop, FL, baseY, horizon, moon, curtW, narrow;
+  let cityK = {}, W, H, PXC, sillH, sillTop, FL, baseY, horizon, moon, curtW, narrow;
   let layers = {}, sprites = {}, lit = {}, pos = {}, lampP = {};
   let stars = [], wins = [], beacons = [], neons = [], smokes = [], clouds = [], motes = [], dust = [];
   let rainF = [], rainM = [], rainN = [], drops = [], puddles = [], ripples = [], splashes = [], leaves = [];
@@ -80,7 +80,9 @@
     let x = 0;
     const P = (px_, py_, w_, h_, col) => { g.fillStyle = col; g.fillRect(px_, py_, w_, h_); };
     while (x < W + 24) {
-      const bw = Math.round(o.minW + r() * (o.maxW - o.minW)), bh = Math.round((o.minH + r() * (o.maxH - o.minH)) * cityK), top = o.base - bh;
+      const bw = Math.round(o.minW + r() * (o.maxW - o.minW)), bh = Math.round((o.minH + r() * (o.maxH - o.minH)) * cityK[o.name]);
+      let top = o.base - bh;
+      if (narrow && x + bw > moon.x - moon.R - 8 && x < moon.x + moon.R + 8 + 8) top = Math.max(top, moon.y + moon.R + 8); // keep the moon clear of tall towers
       P(x, top, bw, H - top, o.color); P(x, top, bw, 1, o.edge); P(x + bw - 1, top, 1, H - top, o.edge); P(x, top + 1, 1, H - top, o.shade);
       const roof = r();
       if (roof < 0.16) {                                  // antenna mast
@@ -215,7 +217,7 @@
 
   function build() {
     const dpr = window.devicePixelRatio || 1;
-    const pd = Math.max(2, Math.min(Math.round((innerHeight * dpr) / 205), Math.floor((innerWidth * dpr) / 128)));
+    const pd = Math.max(2, Math.min(Math.round((innerHeight * dpr) / 205), Math.floor((innerWidth * dpr) / (innerHeight > innerWidth * 1.2 ? 118 : 128))));
     W = Math.floor((innerWidth * dpr) / pd); H = Math.floor((innerHeight * dpr) / pd);
     PXC = pd / dpr;
     cv.width = W; cv.height = H;
@@ -231,7 +233,8 @@
       sillH = FL + 3 + Math.ceil(((dockEl ? dockEl.offsetHeight : 140) + sab + 20) / PXC);
     } else { sillH = Math.max(34, Math.round(H * 0.19)); FL = Math.round(sillH * 0.56); }
     sillTop = H - sillH; baseY = sillTop + FL - 8; horizon = Math.round(sillTop * 0.88);
-    cityK = narrow ? clamp(H / 230, 1, 1.7) : 1;
+    // phones: tall skyline layers so the city fills the frame instead of leaving an empty sky
+    cityK = narrow ? { far2: 1.5, far: 1.9, mid: clamp(H / 100, 1.5, 3), near: clamp(H / 130, 1.3, 2.4) } : { far2: 1, far: 1, mid: 1, near: 1 };
     curtW = clamp(Math.round(W * 0.065), 12, 26);
     moon = narrow
       ? { R: Math.max(9, Math.round(W * 0.1)), x: Math.round(W * 0.74), y: Math.round(H * 0.27) }
