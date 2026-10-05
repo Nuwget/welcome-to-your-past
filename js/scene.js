@@ -73,6 +73,7 @@
 
   /* ---------------------------------------------------------------- palette */
   const PAL = {
+    hd: ['#6a45c4', '#8a68e6', '#a487f2', '#bda4ff'],
     pu: ['#1d0f48', '#35207f', '#5530b4', '#7b4bde', '#a276f4', '#d0b6ff'],   // Dudu: vivid purple
     belly: ['#5530b4', '#7b4bde', '#a276f4', '#c3a2ff'],
     ear: ['#5e2872', '#9a4594', '#d676b6', '#f2a8d4'],
@@ -88,35 +89,39 @@
   const OUT = '#16093a', RIM = '#e8dcff';
 
   /* ---------------------------------------------------------------- sprites */
+  // Dudu: flat-shaded lilac bear, big glossy eyes, pale muzzle, tiny "uu" mouth, headphones (as in the hero art)
   function duduHead(blink) {
-    const s = new Spr(46, 42), U = PAL.pu;
-    ell(s, 9, 9, 7.5, 7.5, { ramp: U, outline: OUT, rim: RIM });
-    ell(s, 37, 9, 7.5, 7.5, { ramp: U, outline: OUT, rim: RIM });
-    ell(s, 9.5, 10.5, 4, 4, { ramp: PAL.ear, outline: false, dither: 0.6 });
-    ell(s, 36.5, 10.5, 4, 4, { ramp: PAL.ear, outline: false, dither: 0.6 });
-    ell(s, 23, 24, 18.5, 16, { ramp: U, outline: OUT, rim: RIM });
-    // fur tufts on the crown
-    px(s, [[21, 8], [22, 7], [23, 7], [24, 8], [23, 9]], '#a276f4');
-    px(s, [[22, 8], [23, 8]], '#d0b6ff');
-    // blush
-    ell(s, 10.5, 30.5, 3.4, 2.1, { ramp: ['#b8508f', '#e27ab8'], outline: false, dither: 0.5 });
-    ell(s, 35.5, 30.5, 3.4, 2.1, { ramp: ['#b8508f', '#e27ab8'], outline: false, dither: 0.5 });
-    // muzzle, nose, mouth
-    ell(s, 23, 31, 7.5, 5.2, { ramp: PAL.cream, outline: false, dither: 0.7, light: [0.2, -0.7, 0.68] });
-    ell(s, 23, 27.8, 3, 2, { ramp: ['#0c061c', '#241242', '#3a2368'], outline: false, dither: 0.3 });
-    px(s, [[22, 27], [23, 27]], '#9a82ee');
-    px(s, [[23, 30], [23, 31]], '#2a1a55');
-    px(s, [[21, 32], [22, 32], [24, 32], [25, 32], [20, 31], [26, 31]], '#2a1a55');
-    // eyes glancing up toward the moon
-    if (blink) {
-      px(s, [[13, 25], [14, 25], [15, 25], [16, 25], [17, 25], [29, 25], [30, 25], [31, 25], [32, 25], [33, 25], [12, 24], [18, 24], [28, 24], [34, 24]], '#120a28');
-    } else {
-      ell(s, 15.5, 25, 3.4, 4.6, { ramp: ['#0e0722', '#170c34'], outline: false, dither: 0 });
-      ell(s, 30.5, 25, 3.4, 4.6, { ramp: ['#0e0722', '#170c34'], outline: false, dither: 0 });
-      px(s, [[16, 22], [17, 22], [16, 23], [17, 23], [31, 22], [32, 22], [31, 23], [32, 23]], '#ffffff');
-      px(s, [[14, 27], [29, 27]], '#c3a2ff');
+    const s = new Spr(54, 48), H = PAL.hd, D = '#1a0b3a';
+    ell(s, 11, 11, 7.5, 7.5, { ramp: H, outline: OUT, rim: RIM, dither: 0.15 });
+    ell(s, 43, 11, 7.5, 7.5, { ramp: H, outline: OUT, rim: RIM, dither: 0.15 });
+    ell(s, 11.5, 12, 4.2, 4.2, { ramp: ['#6a45c4', '#7e5ad8'], outline: false, dither: 0.1 });
+    ell(s, 42.5, 12, 4.2, 4.2, { ramp: ['#6a45c4', '#7e5ad8'], outline: false, dither: 0.1 });
+    ell(s, 27, 27, 21, 17.5, { ramp: H, outline: OUT, rim: RIM, dither: 0.15 });
+    // headphone band + cups
+    for (let x = 6; x <= 48; x++) {
+      const t = (x - 27) / 21, y = Math.round(27 - 17.5 * Math.sqrt(Math.max(0, 1 - t * t)) - 1.5);
+      s.set(x, y, '#1d1840'); s.set(x, y + 1, '#2e2766'); s.set(x, y - 1, '#0f0b26');
+      if (x > 14 && x < 40) s.set(x, y + 2, '#6a4ee0');
     }
-    px(s, [[13, 19], [14, 19], [15, 18], [31, 18], [32, 19], [33, 19]], '#5530b4');
+    ell(s, 4.5, 28, 3.8, 8.5, { ramp: ['#0f0b26', '#1d1840', '#2e2766', '#4a3da0'], outline: '#07051a', rim: '#8a6cf0', dither: 0.1 });
+    ell(s, 49.5, 28, 3.8, 8.5, { ramp: ['#0f0b26', '#1d1840', '#2e2766', '#4a3da0'], outline: '#07051a', rim: '#8a6cf0', dither: 0.1 });
+    px(s, [[3, 27], [3, 28], [3, 29], [50, 27], [50, 28], [50, 29]], '#6a4ee0');
+    // blush
+    ell(s, 11.5, 34, 3.8, 2.6, { ramp: ['#f08fc0', '#f7a6cf'], outline: false, dither: 0.2 });
+    ell(s, 42.5, 34, 3.8, 2.6, { ramp: ['#f08fc0', '#f7a6cf'], outline: false, dither: 0.2 });
+    // muzzle
+    ell(s, 27, 33.5, 8.5, 5.4, { ramp: ['#b9a2f6', '#cdbafc', '#dccdff'], outline: false, dither: 0.25, light: [0.1, -0.7, 0.7] });
+    px(s, [[25, 33], [26, 34], [27, 33], [27, 33], [28, 34], [29, 33]], D);
+    px(s, [[26, 33]], D);
+    // eyes
+    if (blink) {
+      px(s, [[15, 28], [16, 28], [17, 28], [18, 28], [19, 28], [35, 28], [36, 28], [37, 28], [38, 28], [39, 28], [14, 27], [20, 27], [34, 27], [40, 27]], D);
+    } else {
+      ell(s, 17, 28, 3.7, 4.8, { ramp: ['#14082c', '#26124e'], outline: false, dither: 0 });
+      ell(s, 37, 28, 3.7, 4.8, { ramp: ['#14082c', '#26124e'], outline: false, dither: 0 });
+      px(s, [[16, 25], [17, 25], [16, 26], [17, 26], [36, 25], [37, 25], [36, 26], [37, 26]], '#ffffff');
+      px(s, [[18, 30], [38, 30]], '#d0b6ff');
+    }
     return s;
   }
 
@@ -152,12 +157,10 @@
     ell(s, 5.5, 4.5, 4.6, 4.6, { ramp: PAL.bk, outline: '#04030a', rim: '#8f7fe0', rimT: 0.5 });
     ell(s, 24.5, 4.5, 4.6, 4.6, { ramp: PAL.bk, outline: '#04030a', rim: '#8f7fe0', rimT: 0.5 });
     ell(s, 15, 12, 13.5, 9.6, { ramp: PAL.wh, outline: '#1a1438', rim: RIM, dither: 0.7 });
-    ell(s, 9.5, 12, 4.2, 3.6, { ramp: PAL.bk, outline: false, dither: 0.3 });
-    ell(s, 20.5, 12, 4.2, 3.6, { ramp: PAL.bk, outline: false, dither: 0.3 });
-    px(s, [[7, 12], [8, 13], [9, 13], [10, 13], [11, 12], [18, 12], [19, 13], [20, 13], [21, 13], [22, 12]], '#e9e3ff');
-    ell(s, 15, 15.4, 2.4, 1.7, { ramp: ['#07050f', '#1b1634'], outline: false, dither: 0 });
-    px(s, [[14, 14]], '#8a7ad8');
-    px(s, [[15, 17], [14, 18], [16, 18]], '#2a2250');
+    // closed crescent eyes, tiny mouth (sleeping, like the hero panda)
+    px(s, [[6, 11], [7, 11], [8, 11], [9, 11], [10, 11], [11, 11], [5, 10], [12, 10], [7, 12], [8, 12], [9, 12], [10, 12]], '#15102e');
+    px(s, [[19, 11], [20, 11], [21, 11], [22, 11], [23, 11], [24, 11], [18, 10], [25, 10], [20, 12], [21, 12], [22, 12], [23, 12]], '#15102e');
+    px(s, [[14, 14], [15, 14], [16, 14], [15, 15]], '#2a2250');
     stipple(s, (x, y) => ((x - 5.5) / 3) ** 2 + ((y - 16) / 1.6) ** 2 < 1, '#e27ab8', () => 0.7);
     stipple(s, (x, y) => ((x - 24.5) / 3) ** 2 + ((y - 16) / 1.6) ** 2 < 1, '#e27ab8', () => 0.7);
     return s;
@@ -567,7 +570,7 @@
     ctx.drawImage(sprites.body, dx + 10, base - 31);
     if (secs > blinkAt) { blinkUntil = secs + 0.14; blinkAt = secs + 2.6 + rr() * 3.4; }
     bob += ((!reduce && bass > 0.4 ? 1 : 0) - bob) * Math.min(1, dt * 22);
-    ctx.drawImage(sprites.head[secs < blinkUntil ? 1 : 0], dx + 7, base - 63 - Math.round(bob));
+    ctx.drawImage(sprites.head[secs < blinkUntil ? 1 : 0], dx + 3, base - 67 - Math.round(bob));
 
     cx = bx + 50;
     ctx.drawImage(sprites.mug, cx, base - 9);

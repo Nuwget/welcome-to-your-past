@@ -13,6 +13,9 @@
 
   audio.volume = 0.85;
 
+  const titleEl = $('title');
+  [...TITLE].forEach((ch, i) => { const c = document.createElement('span'); c.className = 'c'; c.setAttribute('aria-hidden', 'true'); c.style.setProperty('--i', i); c.textContent = ch; titleEl.appendChild(c); });
+
   function toast(msg, ms = 4200) {
     const t = $('toast'); t.textContent = msg; t.classList.add('show');
     clearTimeout(toast.h); toast.h = setTimeout(() => t.classList.remove('show'), ms);
